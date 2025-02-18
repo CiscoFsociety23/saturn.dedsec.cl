@@ -1,0 +1,6 @@
+FROM node:slim
+
+WORKDIR /saturn.dedsec.cl
+EXPOSE 2300
+
+CMD ["npm", "run", "start:dev"]

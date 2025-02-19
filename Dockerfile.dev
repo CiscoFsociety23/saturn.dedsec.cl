@@ -1,6 +1,7 @@
 FROM node:slim
 
 WORKDIR /saturn.dedsec.cl
+RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 EXPOSE 2300
 
 CMD ["npm", "run", "start:dev"]

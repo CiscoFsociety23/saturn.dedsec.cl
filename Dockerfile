@@ -1,6 +1,8 @@
 FROM node:slim
 
 WORKDIR /saturn.dedsec.cl
+RUN apt-get update && apt-get install -y procps openssl
+COPY ./prisma .
 COPY ./package.json .
 COPY ./tsconfig.json .
 COPY ./tsconfig.build.json .

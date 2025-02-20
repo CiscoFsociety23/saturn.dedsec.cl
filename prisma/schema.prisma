@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model property {
+  id    Int    @id @default(autoincrement())
+  key   String @db.VarChar(255) @unique
+  value String @db.Text
+}
+
+model profile {
+  id      Int     @id @default(autoincrement())
+  profile String  @db.VarChar(255) @unique
+  users   users[]
+}
+
+model status {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(255) @unique
+  serviceStatus serviceStatus[]
+  userStatus    userStatus[]
+}
+
+model serviceStatus {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(255) @unique
+  id_status Int
+  status    status @relation(fields: [id_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicestatus_ibfk_1")
+
+  @@index([id_status], map: "id_status")
+}
+
+model users {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(255)
+  lastName   String       @db.VarChar(255)
+  email      String       @db.VarChar(255) @unique
+  passwd     String       @db.Text
+  id_profile Int
+  userStatus userStatus[]
+  profile    profile      @relation(fields: [id_profile], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+
+  @@index([id_profile], map: "id_profile")
+}
+
+model userStatus {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  statusId Int
+  users    users  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userstatus_ibfk_1")
+  status   status @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userstatus_ibfk_2")
+
+  @@index([statusId], map: "statusId")
+  @@index([userId], map: "userId")
+}

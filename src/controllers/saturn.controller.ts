@@ -11,9 +11,9 @@ export class SaturnController {
     constructor(private saturnService: SaturnService) {};
 
     @Get()
-    public getInformation(@Req() request: Request, @Res() response: Response): void {
+    public async getInformation(@Req() request: Request, @Res() response: Response): Promise<void> {
         this.logger.log(`[ GET ${request.url} ]: Solicitando informacion del servicio`);
-        const serverInformation: information = this.saturnService.information();
+        const serverInformation: information = await this.saturnService.information();
         response.status(200).json(serverInformation);
     };
 

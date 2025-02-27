@@ -1,4 +1,4 @@
-export interface UserCreated {
+export interface UserPublic {
     id: number,
     name: string,
     lastName: string,

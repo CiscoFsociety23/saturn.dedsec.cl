@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from "class-validator"
+import { IsEmail, IsNumber, IsString, MinLength } from "class-validator"
 
 export class User {
     
@@ -12,4 +12,11 @@ export class User {
 
     @IsEmail()
     email: string
+    
+    @IsString()
+    passwd: string
+
+    @IsNumber()
+    profile: number
+
 }

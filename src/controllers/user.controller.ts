@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Logger, Post, Req, Res } from "@nestjs/common";
 import { Request, Response } from "express";
 import { User } from "src/interfaces/user.dto";
+import { UserCreated } from "src/interfaces/user.interfaces";
 import { UserService } from "src/services/user.service";
 
 @Controller('api-saturn/users')
@@ -18,9 +19,9 @@ export class UserController {
     };
 
     @Post()
-    public createUser(@Req() request: Request, @Res() response: Response, @Body() user: User): void {
+    public async createUser(@Req() request: Request, @Res() response: Response, @Body() user: User): Promise<void> {
         this.logger.log(`[ POST ${request.url} ]: Solicitando creacion de usuario`);
-        const created: User = this.userService.createUser(user);
+        const created: UserCreated = await this.userService.createUser(user);
         response.status(201).json(created);
     };
 

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
-import { User } from "src/interfaces/user.dto";
-import { UserPublic } from "src/interfaces/user.interfaces";
-import CryptoUtil from "src/utils/cryto.util";
+import { User } from "../interfaces/user.dto";
+import { UserPublic } from "../interfaces/user.interfaces";
+import CryptoUtil from "../utils/cryto.util";
 
 @Injectable()
 export class UserService {

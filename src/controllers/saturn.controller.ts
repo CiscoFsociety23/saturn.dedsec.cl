@@ -1,7 +1,7 @@
 import { Controller, Get, Logger, Req, Res } from "@nestjs/common";
 import { Request, Response } from "express";
-import { information } from "src/interfaces/saturn.interfaces";
-import { SaturnService } from "src/services/saturn.service";
+import { information } from "../interfaces/saturn.interfaces";
+import { SaturnService } from "../services/saturn.service";
 
 @Controller('api-saturn')
 export class SaturnController {

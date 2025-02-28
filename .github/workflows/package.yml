@@ -17,6 +17,15 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Instalando Dependencias
+        run: npm install
+  
+      - name: Configurando Ambiente
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > ./.env
+
       - name:  Obteniendo Version
         id: get_version
         run: |

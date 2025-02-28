@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { UserController } from 'src/controllers/user.controller';
-import { IsCreatedMiddleware } from 'src/middlewares/isCreated.middleware';
-import { UserService } from 'src/services/user.service';
+import { UserController } from '../controllers/user.controller';
+import { IsCreatedMiddleware } from '../middlewares/user.middleware';
+import { UserService } from '../services/user.service';
 
 @Module({
     controllers: [UserController],

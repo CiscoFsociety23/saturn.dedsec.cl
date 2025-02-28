@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { information, services } from "src/interfaces/saturn.interfaces";
+import { information, services } from "../interfaces/saturn.interfaces";
 import { PrismaClient } from "@prisma/client";
-import { PropertyUtil } from "src/utils/property.util";
+import { PropertyUtil } from "../utils/property.util";
 
 @Injectable()
 export class SaturnService {

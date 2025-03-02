@@ -20,7 +20,7 @@ export class IsCreatedMiddleware implements NestMiddleware {
                     match = true
                 };
             });
-            match ? res.status(400).json({ Mensaje: `El email ${req.body.email} ya esta siendo utilizado`}) : next()
+            match ? res.status(400).json({ message: `El email ${req.body.email} ya esta siendo utilizado`}) : next()
         } catch (error) {
             this.logger.error(`Ha ocurrido un error al verificar si estaba creado ${error}`);
         };

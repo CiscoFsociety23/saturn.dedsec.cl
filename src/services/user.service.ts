@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { User } from "../interfaces/user.dto";
-import { UserCreation, UserPublic } from "../interfaces/user.interfaces";
+import { UserPublic } from "../interfaces/user.interfaces";
 import CryptoUtil from "../utils/cryto.util";
 import { AuthUtil } from "../utils/auth.util";
 
@@ -34,7 +34,7 @@ export class UserService {
         };
     };
 
-    public async createUser(user: User): Promise<UserCreation> {
+    public async createUser(user: User): Promise<UserPublic> {
         try {
             this.logger.log(`[ createUser() ]: Creando el usuario {${user.name} ${user.lastName}, correo ${user.email}}`);
             const passCrypto: string | undefined = await this.crypto.encrypt(user.passwd);
@@ -50,12 +50,7 @@ export class UserService {
                     id: user.profile
                 }}
             }})
-            const validationToken = await this.authUtil.getValidationToken({ email: createdUser.email, profile: createdUser.profile.profile });
-            if(validationToken.token){
-                return { id: createdUser.id, name: createdUser.name, lastName: createdUser.lastName, email: createdUser.email, profile: createdUser.profile.profile, validationToken: validationToken.token };
-            } else {
-                return { id: createdUser.id, name: createdUser.name, lastName: createdUser.lastName, email: createdUser.email, profile: createdUser.profile.profile, validationToken: false };
-            }
+            return { id: createdUser.id, name: createdUser.name, lastName: createdUser.lastName, email: createdUser.email, profile: createdUser.profile.profile };
         } catch (error) {
             this.logger.error(`[ createUser() ]: Ha ocurrido un error al crear el usuario ${error}`);
             return error;

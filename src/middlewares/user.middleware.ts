@@ -5,10 +5,8 @@ import { UserService } from "../services/user.service";
 
 @Injectable()
 export class IsCreatedMiddleware implements NestMiddleware {
-
     private logger: Logger = new Logger(IsCreatedMiddleware.name);
     private userService: UserService = new UserService();
-
     public async use(req: Request, res: Response, next: () => void) {
         try {
             this.logger.log(`Verificando si el correo ${req.body.email} esta creado`);
@@ -25,5 +23,4 @@ export class IsCreatedMiddleware implements NestMiddleware {
             this.logger.error(`Ha ocurrido un error al verificar si estaba creado ${error}`);
         };
     };
-
 }

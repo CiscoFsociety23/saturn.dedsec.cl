@@ -19,7 +19,7 @@ export class UserService {
             this.logger.log('[ getAllUsers() ]: Obteniendo listado de usuarios');
             this.prisma.$connect();
             this.userList.splice(0, this.userList.length);
-            const users: {id: number, name: string, lastName: string, email: string, profile: {profile: string}}[] = await this.prisma.users.findMany({ select: {
+            const users = await this.prisma.users.findMany({ select: {
                 id: true, name: true, lastName: true, email: true, profile: {select: {profile: true}}
             }});
             users.forEach(user => {
@@ -28,6 +28,22 @@ export class UserService {
             return this.userList;
         } catch (error) {
             this.logger.error(`[ getAllUsers() ]: Ha ocurrido un error al obtener los usuarios ${error}`);
+            return error;
+        } finally {
+            this.prisma.$disconnect();
+        };
+    };
+
+    public async getUser(email: string): Promise<UserPublic> {
+        try {
+            this.logger.log(`[ getUser() ]: Obteniendo usuario ${email}`);
+            this.prisma.$connect();
+            const user = await this.prisma.users.findFirst({ select: {
+                id: true, name: true, lastName: true, email: true, profile: { select: { profile: true }}
+            }, where: { email: email }});
+            return { id: Number(user?.id), name: String(user?.name), lastName: String(user?.lastName), email: String(user?.email), profile: String(user?.profile.profile) };
+        } catch (error) {
+            this.logger.error(`[ getUser() ]: Ha ocurrido un error al obtener el usuario ${error}`);
             return error;
         } finally {
             this.prisma.$disconnect();

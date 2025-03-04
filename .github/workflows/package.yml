@@ -26,6 +26,14 @@ jobs:
         run: |
           echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > ./.env
 
+      - name: Conectando a la base de datos
+        run: |
+          npx prisma generate --no-engine
+
+      - name: Compilando la aplicación
+        run: |
+          npm run build
+
       - name:  Obteniendo Version
         id: get_version
         run: |

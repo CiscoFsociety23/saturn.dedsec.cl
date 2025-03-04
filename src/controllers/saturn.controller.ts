@@ -17,7 +17,7 @@ export class SaturnController {
             response.status(200).json(serverInformation);
         } catch (error) {
             this.logger.error(`[ GET ${request.url} ]: Ha ocurrido un error al obtener la informacion del servicio`);
-            response.status(400).json({ message: 'No es posible obtener la informacion', error });
+            response.status(400).json({ message: 'No es posible obtener la informacion', error: error });
         };
     };
 

@@ -11,7 +11,6 @@ COPY ./tsconfig.json /saturn.dedsec.cl/
 COPY ./nest-cli.json /saturn.dedsec.cl/
 RUN npm install
 RUN npx prisma generate --no-engine
-RUN npx prisma db pull
 EXPOSE 2300
 
 CMD ["npm", "run", "start:prod"]

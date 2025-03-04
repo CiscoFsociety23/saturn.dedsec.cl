@@ -28,7 +28,7 @@ jobs:
 
       - name: Migrando base de datos a Prisma Postgres
         run: |
-          npx prisma migrate dev
+          npx prisma migrate deploy
 
       - name: Conectando a la base de datos
         run: |

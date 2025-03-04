@@ -3,7 +3,7 @@ FROM node:slim
 WORKDIR /saturn.dedsec.cl
 RUN apt-get update && apt-get install -y procps openssl
 COPY ./package.json /saturn.dedsec.cl/
-COPY ./dist /saturn.dedsec.cl/
+COPY ./dist/ /saturn.dedsec.cl/dist/
 RUN npm install
 EXPOSE 2300
 

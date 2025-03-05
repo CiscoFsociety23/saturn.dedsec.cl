@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 import { User } from "../interfaces/user.dto";
 import { UserPublic } from "../interfaces/user.interfaces";
 import CryptoUtil from "../utils/cryto.util";
-import { AuthUtil } from "../utils/auth.util";
 
 @Injectable()
 export class UserService {
@@ -11,8 +11,7 @@ export class UserService {
     private logger: Logger = new Logger(UserService.name);
     private userList: UserPublic[] = new Array<UserPublic>();
     private crypto: CryptoUtil = new CryptoUtil();
-    private authUtil: AuthUtil = new AuthUtil();
-    private prisma: PrismaClient = new PrismaClient();
+    private prisma = new PrismaClient().$extends(withAccelerate());
 
     public async getAllUsers(): Promise<UserPublic[]> {
         try {
@@ -70,6 +69,20 @@ export class UserService {
         } catch (error) {
             this.logger.error(`[ createUser() ]: Ha ocurrido un error al crear el usuario ${error}`);
             return error;
+        } finally {
+            this.prisma.$disconnect();
+        };
+    };
+
+    public async deleteUser(user: UserPublic): Promise<boolean> {
+        try {
+            this.logger.log(`[ deleteUser() ]: Eliminando usuario con id ${user.id}, email ${user.email}`);
+            const deletion = await this.prisma.users.delete({ where: {id: user.id}});
+            this.logger.log(`[ deleteUser() ]: Usuario eliminado ${deletion}`);
+            return true;
+        } catch (error) {
+            this.logger.error(`[ deleteUser() ]: Ha ocurrido un error al eliminar el usuario ${error}`);
+            return false;
         } finally {
             this.prisma.$disconnect();
         };

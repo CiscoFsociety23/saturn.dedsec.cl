@@ -6,6 +6,6 @@ COPY ./dist ./dist
 COPY ./.env .
 COPY ./prisma .
 RUN npm install
-RUN npx prisma generate
+RUN npx prisma generate --no-engine
 EXPOSE 2300
 CMD ["npm", "run", "start:prod"]

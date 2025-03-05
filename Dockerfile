@@ -2,10 +2,7 @@ FROM node:slim
 WORKDIR /saturn.dedsec.cl
 RUN apt-get update && apt-get install -y procps openssl
 COPY ./package.json .
-COPY ./tsconfig.json .
-COPY ./tsconfig.build.json .
-COPY ./nest-cli.json .
-COPY ./src .
+COPY ./dist .
 COPY ./.env .
 COPY ./prisma .
 RUN npm install

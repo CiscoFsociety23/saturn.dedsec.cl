@@ -28,4 +28,22 @@ export class AuthUtil {
         };
     };
 
+    public async validateToken(token: string) {
+        try {
+            this.logger.log(`[ validateToken() ]: Validado firma del token`);
+            const urlQuimera = await this.property.getProperty('Validate Token Sign URL');
+            const validate = await axios.post(String(urlQuimera), null, {headers: {'Authorization': `Bearer ${token}`}});
+            if(validate.status != 200){
+                this.logger.warn(`[ validateToken() ]: El servicio de validacion dio un error ${validate.status}`);
+                return false;
+            } else {
+                this.logger.log(`[ validateToken() ]: Respuesta del servicio ${validate}`);
+                return validate.data;
+            };
+        } catch (error) {
+            this.logger.error(`[ validateToken() ]: Ha ocurrido un error al valdar el token ${error.message}`);
+            return error;
+        };
+    };
+
 }

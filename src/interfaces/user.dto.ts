@@ -20,3 +20,17 @@ export class User {
     profile: number
 
 }
+
+export class UserTokenDto {
+    @IsEmail()
+    email: string;
+
+    @IsString()
+    profile: string;
+
+    @IsNumber()
+    iat: number;
+
+    @IsNumber()
+    exp: number;
+}

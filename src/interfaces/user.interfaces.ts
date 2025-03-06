@@ -4,6 +4,7 @@ export interface UserPublic {
     lastName: string,
     email: string,
     profile: string
+    status: string
 }
 
 export interface AuthPayload {

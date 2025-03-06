@@ -60,6 +60,25 @@ export class UserController {
         };
     };
 
+    @Post('updateStatus')
+    public async updateStatus(@Req() request: Request, @Res() response: Response): Promise<void> {
+        try {
+            const { email, idStatus } = request.query;
+            this.logger.log(`[ POST ${request.url} ]: Solicitando actualizar usuario ${String(email)}`);
+            const user: UserPublic = await this.userService.getUser(String(email));
+            if (typeof user.email === 'string') {
+                const status: string = await this.userStatus.updateStatus({ ...user }, Number(idStatus));
+                if (typeof status === 'string'){
+                    this.logger.log(`[ POST ${request.url} ]: Estado actualizado ${status} | ${String(email)}`);
+                    response.status(200).json({ message: 'Estado actualizado con éxito', data: { email: user.email, status }, status: true });
+                } else { throw new Error('Estado no encontrado') };
+            } else { throw new Error('Usuario no encontrado') };
+        } catch (error) {
+            this.logger.error(`[ POST ${request.url} ]: Ha ocurrido un error al actualizar el estado`);
+            response.status(400).json({ message: 'No es posible actualizar el estado', error: error.message, status: false });
+        };
+    };
+
     @Delete()
     public async deleteUser(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {

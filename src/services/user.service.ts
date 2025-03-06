@@ -46,11 +46,13 @@ export class UserService {
             const user = await this.prisma.users.findFirst({ select: {
                 id: true, name: true, lastName: true, email: true, profile: { select: { profile: true }}, userStatus: {include:{status:{select:{name:true}}}}
             }, where: { email: email }});
-            if(Number(user?.userStatus.length) > 0){
-                return { id: Number(user?.id), name: String(user?.name), lastName: String(user?.lastName), email: String(user?.email), profile: String(user?.profile.profile), status: String(user?.userStatus[0].status.name) };
-            } else {
-                return { id: Number(user?.id), name: String(user?.name), lastName: String(user?.lastName), email: String(user?.email), profile: String(user?.profile.profile), status: 'null' };
-            };
+            if(user?.email === email){
+                if(Number(user?.userStatus.length) > 0){
+                    return { id: Number(user?.id), name: String(user?.name), lastName: String(user?.lastName), email: String(user?.email), profile: String(user?.profile.profile), status: String(user?.userStatus[0].status.name) };
+                } else {
+                    return { id: Number(user?.id), name: String(user?.name), lastName: String(user?.lastName), email: String(user?.email), profile: String(user?.profile.profile), status: 'null' };
+                };
+            } else { throw new Error('Usuario no encontrado'); };
         } catch (error) {
             this.logger.error(`[ getUser() ]: Ha ocurrido un error al obtener el usuario ${error}`);
             return error;

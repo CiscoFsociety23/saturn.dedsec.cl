@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Logger, Post, Req, Res } from "@nestjs/common";
 import { Request, Response } from "express";
 import { User, UserTokenDto } from "../interfaces/user.dto";
-import { UserPublic } from "../interfaces/user.interfaces";
+import { UserPublic, LogIn } from "../interfaces/user.interfaces";
 import { UserService } from "../services/user.service";
 import { AuthUtil } from "../utils/auth.util";
 import { UserStatusUtil } from "../utils/userStatus.util";
@@ -57,6 +57,24 @@ export class UserController {
         } catch (error) {
             this.logger.error(`[ POST /api-saturn/users/validate ]: Error al validar usuario: ${error.message}`);
             response.status(400).json({ message: 'No es posible validar el usuario', error: error.message });
+        };
+    };
+
+    @Post('logIn')
+    public async logIn(@Req() request: Request, @Res() response: Response, @Body() logIn: LogIn): Promise<void> {
+        try {
+            this.logger.log(`[ POST ${request.url} ]: Solicitando verificacion de usuario ${logIn.email}`);
+            const verify = await this.userService.verificateUser(logIn);
+            if(verify == true) {
+                const user: UserPublic = await this.userService.getUser(logIn.email);
+                if(user.status === 'VALIDATED'){
+                    const sessionToken = await this.authUtil.getSessionToken({ email: user.email, profile: user.profile });
+                    response.status(200).json({ message: 'Acceso correcto', status: verify, token: sessionToken.token, user });
+                } else { throw new Error(`Estado del usuario no es validado: ${user.status}`) };
+            } else { throw new Error(`${verify}`) };
+        } catch (error) {
+            this.logger.error(`[ POST ${request.url} ]: Ha ocurrido un error al verificar el usuario ${error.message}`);
+            response.status(400).json({ message: 'No es posible verificar el usuario', error: error.message });
         };
     };
 

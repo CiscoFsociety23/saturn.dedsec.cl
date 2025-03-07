@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { User, UserTokenDto } from "../interfaces/user.dto";
-import { UserPublic } from "../interfaces/user.interfaces";
+import { LogIn, UserPublic } from "../interfaces/user.interfaces";
 import CryptoUtil from "../utils/cryto.util";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -114,19 +114,44 @@ export class UserService {
             const parsedData = JSON.parse(decodedString);
             const userDataToken = plainToInstance(UserTokenDto, parsedData);
             await validate(userDataToken);
-            this.prisma.$connect();
             return userDataToken;
         } catch (error) {
             this.logger.error(`[ validateStatus() ]: Ha ocurrido un error al validar el usaurio ${error.messsage}`);
             return error;
+        };
+    };
+
+    public async verificateUser(logInData: LogIn): Promise<boolean> {
+        try {
+            this.logger.log(`[ verificateUser() ]: Verificando credenciales del usuario ${logInData.email}`);
+            this.prisma.$connect();
+            const getUserData = await this.prisma.users.findFirst({
+                select: { email: true, passwd: true },
+                where: { email: logInData.email }
+            });
+            if (getUserData == null){
+                this.logger.warn(`[ verificateUser() ]: Usuario ${logInData.email} no registrado`);
+                throw new Error('Usuario no encontrado');
+            } else {
+                this.logger.log(`[ verificateUser() ]: Verificando datos del usuario ${logInData.email}`);
+                const passDecryp = await this.crypto.decrypt(getUserData.passwd);
+                if(passDecryp === logInData.passwd){
+                    this.logger.log(`[ verificateUser() ]: Acceso para el usuario ${logInData.email} OK`);
+                    return true;
+                } else {  this.logger.warn(`[ verificateUser() ]: Contraseña incorrecta`); throw new Error('Contraseña inválida'); }
+            };
+        } catch (error) {
+            this.logger.error(`[ verificateUser() ]: Ha ocurrido un error al verificar las credenciales del usuario ${error.message}`);
+            return error;
         } finally {
             this.prisma.$disconnect();
-        };
+        }
     };
 
     public async deleteUser(user: UserPublic): Promise<boolean> {
         try {
             this.logger.log(`[ deleteUser() ]: Eliminando usuario con id ${user.id}, email ${user.email}`);
+            this.prisma.$connect();
             const deletion = await this.prisma.users.delete({ where: {id: user.id}});
             this.logger.log(`[ deleteUser() ]: Usuario eliminado ${deletion}`);
             return true;

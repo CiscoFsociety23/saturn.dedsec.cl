@@ -16,8 +16,8 @@ export class SaturnController {
             const serverInformation: information = await this.saturnService.information();
             response.status(200).json(serverInformation);
         } catch (error) {
-            this.logger.error(`[ GET ${request.url} ]: Ha ocurrido un error al obtener la informacion del servicio`);
-            response.status(400).json({ message: 'No es posible obtener la informacion', error: error });
+            this.logger.error(`[ GET ${request.url} ]: Ha ocurrido un error al obtener la informacion del servicio ${error.message}`);
+            response.status(400).json({ message: 'No es posible obtener la informacion', error: error.message });
         };
     };
 

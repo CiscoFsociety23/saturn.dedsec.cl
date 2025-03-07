@@ -11,3 +11,8 @@ export interface AuthPayload {
     email: string,
     profile: string
 }
+
+export interface LogIn {
+    email: string,
+    passwd: string
+}

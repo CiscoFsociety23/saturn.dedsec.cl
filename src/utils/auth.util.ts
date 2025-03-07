@@ -28,6 +28,26 @@ export class AuthUtil {
         };
     };
 
+    public async getSessionToken(payload: AuthPayload) {
+        try {
+            this.logger.log(`[ getSessionToken() ]: Solicitando token de sesión a Dedsec Alpha`);
+            const dedsecSessionURL: string | undefined = await this.property.getProperty('Dedsec Alpha Session Token URL');
+            const user: string | undefined = await this.property.getProperty('Dedsec Alpha User');
+            const pass: string | undefined = await this.property.getProperty('Dedsec Alpha Pass');
+            const res = await axios.post(`${String(dedsecSessionURL)}?user=${String(user)}&pass=${String(pass)}`, payload);
+            this.logger.log(`[ getSessionToken() ]: Token obtenido con éxito`);
+            if(res.status == 200) {
+                return res.data;
+            } else {
+                this.logger.error(`[ getSessionToken() ]: Ha ocurrido un error en la respuesta del servicio ${res.data}`);
+                return false;
+            };
+        } catch (error) {
+            this.logger.log(`[ getSessionToken() ]: Ha ocurrido un error al obtener el token de validación ${error}`);
+            return error;
+        };
+    };
+
     public async validateToken(token: string) {
         try {
             this.logger.log(`[ validateToken() ]: Validado firma del token`);

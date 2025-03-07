@@ -17,12 +17,23 @@ export class UserController {
     @Get()
     public async getAllUsers(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {
-            this.logger.log(`[ GET ${request.url} ]: Solicitando listado de usuarios`);
-            const users: UserPublic[] = await this.userService.getAllUsers();
-            response.status(200).json({ message: "Listado de usuarios", users: users });
+            const { email } = request.query;
+            if(email){
+                this.logger.log(`[ GET ${request.url} ]: Solicitando usuario ${email}`);
+                const user = await this.userService.getUser(String(email));
+                if (user.email === String(email)){
+                    response.status(200).json({ message: "Usuario encontrado con éxito", user });
+                } else { throw new Error(`Usuario ${email} no registrado`) };
+            } else {
+                this.logger.log(`[ GET ${request.url} ]: Solicitando listado de usuarios`);
+                const users: UserPublic[] = await this.userService.getAllUsers();
+                if (users.length > 0){
+                    response.status(200).json({ message: "Listado de usuarios", users: users });
+                } else { throw new Error(`No hay usuarios registrados`) };
+            };
         } catch (error) {
             this.logger.error(`[ GET ${request.url} ]: Ha ocurrido un error al obtener los usuarios ${error.message}`);
-            response.status(400).json({ message: 'No es posible obtener los usuarios', error: error.message });
+            response.status(400).json({ message: 'No es posible obtener la información', error: error.message });
         };
     };
 

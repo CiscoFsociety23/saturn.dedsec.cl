@@ -1,10 +1,11 @@
 import { Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 export class PropertyUtil {
 
     private logger: Logger = new Logger(PropertyUtil.name);
-    private prisma: PrismaClient = new PrismaClient();
+    private prisma = new PrismaClient().$extends(withAccelerate());
 
     public async getProperty(key: string): Promise<string | undefined> {
         try {

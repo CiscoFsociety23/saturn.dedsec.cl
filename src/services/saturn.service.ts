@@ -2,12 +2,13 @@ import { Injectable, Logger } from "@nestjs/common";
 import { information, services } from "../interfaces/saturn.interfaces";
 import { PrismaClient } from "@prisma/client";
 import { PropertyUtil } from "../utils/property.util";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 @Injectable()
 export class SaturnService {
     
     private logger: Logger = new Logger(SaturnService.name);
-    private prisma: PrismaClient = new PrismaClient();
+    private prisma = new PrismaClient().$extends(withAccelerate());
     private serviceList: services[] = new Array<services>();
     private property: PropertyUtil = new PropertyUtil();
 

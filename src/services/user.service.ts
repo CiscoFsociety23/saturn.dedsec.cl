@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { User, UserTokenDto } from "../interfaces/user.dto";
+import { UserDto, UserTokenDto, UserUpdateDto } from "../interfaces/user.dto";
 import { LogIn, UserPublic } from "../interfaces/user.interfaces";
 import CryptoUtil from "../utils/cryto.util";
 import { plainToInstance } from "class-transformer";
@@ -61,7 +61,7 @@ export class UserService {
         };
     };
 
-    public async createUser(user: User): Promise<UserPublic> {
+    public async createUser(user: UserDto): Promise<UserPublic> {
         try {
             this.logger.log(`[ createUser() ]: Creando el usuario {${user.name} ${user.lastName}, correo ${user.email}}`);
             const passCrypto: string | undefined = await this.crypto.encrypt(user.passwd);
@@ -83,6 +83,21 @@ export class UserService {
             return error;
         } finally {
             this.prisma.$disconnect();
+        };
+    };
+
+    public async updateUser(id: number, userData: UserUpdateDto): Promise<UserUpdateDto> {
+        try {
+            this.logger.log(`[ updateUser() ]: Actualizando usuario ${String(id)}`);
+            const userUpdate = await this.prisma.users.update({
+                where: {id},
+                data: { id: undefined, ...userData }
+            });
+            this.logger.log(`[ updateUser() ]: Usuario ${userUpdate.name} actualizado con exito`);
+            return userUpdate;
+        } catch (error) {
+            this.logger.error(`[ updateUser() ]: Ha ocurrido un error al actualizar el usuario ${error.message}`);
+            return error;
         };
     };
 

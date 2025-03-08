@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import { Request, Response } from "express";
-import { User, UserTokenDto } from "../interfaces/user.dto";
+import { UserDto, UserTokenDto, UserUpdateDto } from "../interfaces/user.dto";
 import { UserPublic, LogIn } from "../interfaces/user.interfaces";
 import { UserService } from "../services/user.service";
 import { AuthUtil } from "../utils/auth.util";
@@ -38,7 +38,7 @@ export class UserController {
     };
 
     @Post()
-    public async createUser(@Req() request: Request, @Res() response: Response, @Body() user: User): Promise<void> {
+    public async createUser(@Req() request: Request, @Res() response: Response, @Body() user: UserDto): Promise<void> {
         try {
             this.logger.log(`[ POST ${request.url} ]: Solicitando creacion de usuario`);
             const created: UserPublic = await this.userService.createUser(user);
@@ -89,21 +89,36 @@ export class UserController {
         };
     };
 
-    @Post('updateStatus')
+    @Patch('updateUser/:id')
+    public async updateUser(@Req() request: Request, @Res() response: Response, @Param() { id }, @Body() userData: UserUpdateDto): Promise<void> {
+        try {
+            this.logger.log(`[ PATCH ${request.url} ]: Solicitando actualizar el usuario`);
+            const update: UserUpdateDto = await this.userService.updateUser(Number(id),userData);
+            const user = await this.userService.getUser(update.email);
+            const status = await this.userStatus.updateStatus(user, 3);
+            const token = await this.authUtil.getValidationToken({ email: update.email, profile: String(user.profile)})
+            response.status(200).json({ message: 'Usuario actualizado con exito debe volverse a validar', status, userUpdatedData: update, validationData: token });
+        } catch (error) {
+            this.logger.error(`[ PATCH ${request.url} ]: Ha ocurrido un error al actualizar el usuario`);
+            response.status(400).json({ message: 'No es posible actualizar el estado', error: error.message });
+        };
+    };
+
+    @Put('updateStatus')
     public async updateStatus(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {
             const { email, idStatus } = request.query;
-            this.logger.log(`[ POST ${request.url} ]: Solicitando actualizar usuario ${String(email)}`);
+            this.logger.log(`[ PUT ${request.url} ]: Solicitando actualizar usuario ${String(email)}`);
             const user: UserPublic = await this.userService.getUser(String(email));
             if (typeof user.email === 'string') {
                 const status: string = await this.userStatus.updateStatus({ ...user }, Number(idStatus));
                 if (typeof status === 'string'){
-                    this.logger.log(`[ POST ${request.url} ]: Estado actualizado ${status} | ${String(email)}`);
+                    this.logger.log(`[ PUT ${request.url} ]: Estado actualizado ${status} | ${String(email)}`);
                     response.status(200).json({ message: 'Estado actualizado con éxito', data: { email: user.email, status }, status: true });
                 } else { throw new Error('Estado no encontrado') };
             } else { throw new Error('Usuario no encontrado') };
         } catch (error) {
-            this.logger.error(`[ POST ${request.url} ]: Ha ocurrido un error al actualizar el estado`);
+            this.logger.error(`[ PUT ${request.url} ]: Ha ocurrido un error al actualizar el estado`);
             response.status(400).json({ message: 'No es posible actualizar el estado', error: error.message, status: false });
         };
     };

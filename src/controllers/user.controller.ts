@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
 import { Request, Response } from "express";
 import { UserDto, UserTokenDto, UserUpdateDto } from "../interfaces/user.dto";
 import { UserPublic, LogIn } from "../interfaces/user.interfaces";
 import { UserService } from "../services/user.service";
 import { AuthUtil } from "../utils/auth.util";
 import { UserStatusUtil } from "../utils/userStatus.util";
+import { AuthGuard } from "../guards/auth.guard";
 
 @Controller('api-saturn/users')
 export class UserController {
@@ -15,6 +16,7 @@ export class UserController {
     constructor(private userService: UserService) {};
 
     @Get()
+    @UseGuards(AuthGuard)
     public async getAllUsers(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {
             const { email } = request.query;
@@ -38,6 +40,7 @@ export class UserController {
     };
 
     @Post()
+    @UseGuards(AuthGuard)
     public async createUser(@Req() request: Request, @Res() response: Response, @Body() user: UserDto): Promise<void> {
         try {
             this.logger.log(`[ POST ${request.url} ]: Solicitando creacion de usuario`);
@@ -90,6 +93,7 @@ export class UserController {
     };
 
     @Patch('updateUser/:id')
+    @UseGuards(AuthGuard)
     public async updateUser(@Req() request: Request, @Res() response: Response, @Param() { id }, @Body() userData: UserUpdateDto): Promise<void> {
         try {
             this.logger.log(`[ PATCH ${request.url} ]: Solicitando actualizar el usuario`);
@@ -105,6 +109,7 @@ export class UserController {
     };
 
     @Put('updateStatus')
+    @UseGuards(AuthGuard)
     public async updateStatus(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {
             const { email, idStatus } = request.query;
@@ -124,6 +129,7 @@ export class UserController {
     };
 
     @Delete()
+    @UseGuards(AuthGuard)
     public async deleteUser(@Req() request: Request, @Res() response: Response): Promise<void> {
         try {
             this.logger.log(`[ DELETE ${request.url} ]: Solicitando eliminar usuario`);

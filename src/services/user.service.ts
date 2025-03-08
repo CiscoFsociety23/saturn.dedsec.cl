@@ -122,16 +122,16 @@ export class UserService {
 
     public async getDataToken(token: string): Promise<UserTokenDto> {
         try {
-            this.logger.log(`[ validateStatus() ]: Obteniendo datos del token`);
+            this.logger.log(`[ getDataToken() ]: Obteniendo datos del token`);
             const payloadBase64 = String(token).split(".")[1];
             const decodedString = Buffer.from(String(payloadBase64), 'base64').toString('utf-8');
-            this.logger.log(`[ validateStatus() ]: Datos obtenido ${decodedString}`);
+            this.logger.log(`[ getDataToken() ]: Datos obtenido ${decodedString}`);
             const parsedData = JSON.parse(decodedString);
             const userDataToken = plainToInstance(UserTokenDto, parsedData);
             await validate(userDataToken);
             return userDataToken;
         } catch (error) {
-            this.logger.error(`[ validateStatus() ]: Ha ocurrido un error al validar el usaurio ${error.messsage}`);
+            this.logger.error(`[ getDataToken() ]: Ha ocurrido un error al validar el usaurio ${error.messsage}`);
             return error;
         };
     };
